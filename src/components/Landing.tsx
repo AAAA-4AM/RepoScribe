@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import React from "react";
 import {
   Github,
   FileText,
@@ -18,6 +19,7 @@ import { FloatingIcon } from "@/contexts/LandingConstants";
 
 export default function Landing() {
   const { login } = useAuth();
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 relative overflow-hidden">

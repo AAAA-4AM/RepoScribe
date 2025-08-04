@@ -24,7 +24,7 @@ body {
   .mobile-text-center {
     text-align: center;
   }
-  
+
   .mobile-full-width {
     width: 100%;
   }
@@ -32,7 +32,7 @@ body {
 
 /* Improve touch targets on mobile */
 @media (max-width: 768px) {
-  button, 
+  button,
   a {
     min-height: 44px;
   }
