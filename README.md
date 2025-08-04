@@ -1,40 +1,168 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# RepoScribe
 
-## Getting Started
+RepoScribe is an AI-powered web application that generates high-quality documentation for GitHub repositories. It provides a seamless experience for developers to create comprehensive, professional documentation with just a few clicks.
 
-First, run the development server:
+## ✨ Features
+
+- **🔐 GitHub OAuth Integration**: Secure authentication with GitHub
+- **📚 Repository Selection**: Browse and select from your GitHub repositories
+- **🤖 AI-Powered Generation**: Advanced AI analyzes your codebase and generates comprehensive documentation
+- **🎨 Beautiful UI**: Modern, responsive design with smooth animations
+- **📄 Multiple Export Formats**: Export documentation in Markdown, PDF, or HTML
+- **⚡ Real-time Processing**: Watch the documentation generation process in real-time
+- **📱 Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
+
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 14, React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Authentication**: GitHub OAuth
+- **API**: Next.js API Routes
+
+## 🛠️ Setup and Installation
+
+### Prerequisites
+
+- Node.js 18+ and npm/yarn
+- GitHub OAuth App credentials
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd reposcribe
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. GitHub OAuth Setup
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+2. Click "New OAuth App"
+3. Fill in the application details:
+   - **Application name**: RepoScribe
+   - **Homepage URL**: http://localhost:3000
+   - **Authorization callback URL**: http://localhost:3000/api/auth/callback
+4. Copy the Client ID and Client Secret
+
+### 4. Environment Configuration
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+2. Update `.env.local` with your GitHub OAuth credentials:
+   ```env
+   NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id_here
+   GITHUB_CLIENT_ID=your_github_client_id_here
+   GITHUB_CLIENT_SECRET=your_github_client_secret_here
+   NEXTAUTH_URL=http://localhost:3000
+   ```
+
+### 5. Run the Development Server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 🎯 Usage
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+1. **Sign In**: Click "Sign in with GitHub" to authenticate
+2. **Select Repository**: Choose a repository from your GitHub account
+3. **Generate Documentation**: Watch as AI analyzes your code and generates comprehensive documentation
+4. **Download**: Export your documentation in your preferred format
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## 🏗️ Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+reposcribe/
+├── src/
+│   ├── components/          # React components
+│   │   ├── Landing.tsx      # Landing page with auth
+│   │   ├── RepoSelector.tsx # Repository selection interface
+│   │   ├── DocumentationGenerator.tsx # Documentation generation UI
+│   │   └── Layout.tsx       # Main layout component
+│   ├── contexts/           # React contexts
+│   │   └── AuthContext.tsx # Authentication context
+│   ├── pages/              # Next.js pages
+│   │   ├── api/            # API routes
+│   │   │   ├── auth/       # Authentication endpoints
+│   │   │   ├── repositories.ts # Repository fetching
+│   │   │   └── generate-documentation.ts # Documentation generation
+│   │   ├── auth/           # Auth pages
+│   │   └── index.tsx       # Main application page
+│   ├── styles/             # CSS styles
+│   └── types/              # TypeScript type definitions
+├── public/                 # Static assets
+└── README.md
+```
 
-## Learn More
+## 🎨 Design Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Modern Gradient Backgrounds**: Beautiful animated gradients
+- **Glassmorphism Effects**: Subtle backdrop blur effects
+- **Smooth Animations**: Framer Motion powered animations
+- **Responsive Grid Layouts**: Perfect on all screen sizes
+- **Interactive Elements**: Hover effects and micro-interactions
+- **Loading States**: Elegant loading animations
+- **Error Handling**: User-friendly error messages
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## 🔧 API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `GET /api/auth/user` - Get authenticated user info
+- `GET /api/auth/callback` - GitHub OAuth callback
+- `GET /api/repositories` - Fetch user repositories
+- `POST /api/generate-documentation` - Generate documentation
 
-## Deploy on Vercel
+## 🚀 Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Vercel (Recommended)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Update GitHub OAuth callback URL to your production domain
+
+### Other Platforms
+
+The application can be deployed to any platform that supports Next.js:
+- Netlify
+- Railway
+- Heroku
+- AWS Amplify
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- GitHub API for repository access
+- OpenAI/Anthropic for AI capabilities (integration ready)
+- Vercel for hosting platform
+- The open-source community for amazing tools
+
+---
+
+**Made with ❤️ for developers who value great documentation**
