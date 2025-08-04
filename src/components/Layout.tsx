@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
-import { LogOut, User, Github, FileText } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { motion } from "framer-motion";
+import { LogOut, User, Github, FileText } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -46,7 +46,7 @@ export default function Layout({ children, showHeader = true }: LayoutProps) {
                     <p className="text-gray-300 text-sm">@{user.login}</p>
                   </div>
                 </div>
-                
+
                 <motion.button
                   onClick={logout}
                   className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg border border-white/20 transition-all duration-300"
