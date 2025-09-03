@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import { Search, Star, GitFork, Calendar, ChevronRight, Loader2, BookOpen, Code, Zap } from 'lucide-react';
 import { Repository } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
@@ -97,18 +98,15 @@ export default function RepoSelector({ onSelectRepo, selectedRepo }: RepoSelecto
   const fetchRepositories = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('github_token');
-      const response = await fetch('/api/repositories', {
+      const accessToken = localStorage.getItem('accessToken');
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://reposcribe-lhhs.onrender.com';
+      const response = await axios.get(`${baseUrl}/api/repositories`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch repositories');
-      }
-
-      const repos = await response.json();
+      const repos = response.data;
       setRepositories(repos);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

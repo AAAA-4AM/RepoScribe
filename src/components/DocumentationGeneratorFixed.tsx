@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import { 
   Loader2, 
   Sparkles, 
@@ -187,21 +188,19 @@ export default function DocumentationGenerator({ repository, onBack }: Documenta
         await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing time
       }
 
-      const token = localStorage.getItem('github_token');
-      const response = await fetch('/api/generate-documentation', {
-        method: 'POST',
+      const accessToken = localStorage.getItem('accessToken');
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://reposcribe-lhhs.onrender.com';
+      const response = await axios.post(`${baseUrl}/api/generateDoc`, {
+        accessToken,
+        repoLink: repository.html_url,
+        containsAPI: true
+      }, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ repository }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate documentation');
-      }
-
-      const doc = await response.json();
+      const doc = response.data;
       setDocumentation(doc);
       setCurrentStep(steps.length + 1);
     } catch (err) {

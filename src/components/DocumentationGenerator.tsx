@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 import {
   Loader2,
   Sparkles,
@@ -202,41 +203,39 @@ export default function DocumentationGenerator({
     generateDocumentation();
   }, []);
 
-  const generateDocumentation = async () => {
-    setIsGenerating(true);
-    setError(null);
-    setCurrentStep(0);
+    const generateDocumentation = async () => {
+      setIsGenerating(true);
+      setError(null);
+      setCurrentStep(0);
 
-    try {
-      // Simulate the generation process with steps
-      for (let i = 0; i < steps.length; i++) {
-        setCurrentStep(i + 1);
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate processing time
+      try {
+        // Simulate the generation process with steps
+        for (let i = 0; i < steps.length; i++) {
+          setCurrentStep(i + 1);
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing time
+        }
+
+        const accessToken = localStorage.getItem('accessToken');
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://reposcribe-lhhs.onrender.com';
+        const response = await axios.post(`${baseUrl}/api/generateDoc`, {
+          accessToken,
+          repoLink: repository.html_url,
+          containsAPI: true // or false, you may want to make this dynamic
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const doc = response.data;
+        setDocumentation(doc);
+        setCurrentStep(steps.length + 1);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setIsGenerating(false);
       }
-
-      const token = localStorage.getItem("github_token");
-      const response = await fetch("/api/generate-documentation", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ repository }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to generate documentation");
-      }
-
-      const doc = await response.json();
-      setDocumentation(doc);
-      setCurrentStep(steps.length + 1);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+    };
 
   const regenerateDocumentation = () => {
     setDocumentation(null);

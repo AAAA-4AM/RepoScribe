@@ -72,7 +72,7 @@ export default function Landing() {
         </div>
       </motion.nav>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-32 sm:py-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:my-8 my-32 sm:my-24">
         <div className="text-center mb-12 sm:mb-16">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}

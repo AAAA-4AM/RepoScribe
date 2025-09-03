@@ -1,25 +1,25 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { motion } from 'framer-motion';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { motion } from "framer-motion";
+import { CheckCircle, Loader2 } from "lucide-react";
 
 export default function AuthSuccess() {
   const router = useRouter();
 
   useEffect(() => {
-    const { token } = router.query;
+    const { accessToken } = router.query;
 
-    if (token && typeof token === 'string') {
+    if (accessToken && typeof accessToken === "string") {
       // Store the token
-      localStorage.setItem('github_token', token);
-      
+      localStorage.setItem("accessToken", accessToken);
+
       // Redirect to main app after a short delay
       setTimeout(() => {
-        router.push('/');
+        router.push("/");
       }, 2000);
     } else if (router.isReady) {
       // No token found, redirect to login
-      router.push('/');
+      router.push("/");
     }
   }, [router]);
 
@@ -38,10 +38,14 @@ export default function AuthSuccess() {
         >
           <CheckCircle className="w-8 h-8 text-white" />
         </motion.div>
-        
-        <h2 className="text-2xl font-bold text-white mb-2">Authentication Successful!</h2>
-        <p className="text-gray-300 mb-4">Redirecting you to the application...</p>
-        
+
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Authentication Successful!
+        </h2>
+        <p className="text-gray-300 mb-4">
+          Redirecting you to the application...
+        </p>
+
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
