@@ -36,11 +36,11 @@ export default function Layout({ children, showHeader = true }: LayoutProps) {
             {user && (
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-3">
-                  <img
+                  {/* <img
                     src={user.avatar_url}
                     alt={user.name}
                     className="w-8 h-8 rounded-full border-2 border-white/20"
-                  />
+                  /> */}
                   <div className="hidden md:block">
                     <p className="text-white font-medium">{user.name}</p>
                     <p className="text-gray-300 text-sm">@{user.login}</p>
