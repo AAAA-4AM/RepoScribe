@@ -29,9 +29,9 @@ const AuthCallback = () => {
     // Only process once
     (async () => {
       try {
-  await handleCallback(code);
-  setLoading(false);
-  router.replace("/dashboard");
+        await handleCallback(code);
+        setLoading(false);
+        router.replace("/dashboard");
       } catch (err) {
         setAuthError("Authentication failed. Please try again.");
         setLoading(false);
