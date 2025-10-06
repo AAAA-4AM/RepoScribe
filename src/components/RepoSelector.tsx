@@ -1,25 +1,39 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
-import { Search, Star, GitFork, Calendar, ChevronRight, Loader2, BookOpen, Code, Zap } from 'lucide-react';
-import { Repository } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import {
+  Search,
+  Star,
+  GitFork,
+  Calendar,
+  ChevronRight,
+  Loader2,
+  BookOpen,
+  Code,
+  Zap,
+} from "lucide-react";
+import { Repository } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface RepoSelectorProps {
   onSelectRepo: (repo: Repository) => void;
   selectedRepo: Repository | null;
 }
 
-const RepoCard = ({ repo, onSelect, isSelected }: {
+const RepoCard = ({
+  repo,
+  onSelect,
+  isSelected,
+}: {
   repo: Repository;
   onSelect: () => void;
   isSelected: boolean;
 }) => {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -30,9 +44,9 @@ const RepoCard = ({ repo, onSelect, isSelected }: {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className={`group cursor-pointer transition-all duration-300 ${
-        isSelected 
-          ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/50' 
-          : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20'
+        isSelected
+          ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/50"
+          : "bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20"
       } backdrop-blur-sm rounded-xl p-4 sm:p-6 border`}
       onClick={onSelect}
       whileHover={{ scale: 1.02 }}
@@ -44,25 +58,33 @@ const RepoCard = ({ repo, onSelect, isSelected }: {
             {repo.name}
           </h3>
           {repo.description && (
-            <p className="text-gray-300 text-xs sm:text-sm mt-1 line-clamp-2">{repo.description}</p>
+            <p className="text-gray-300 text-xs sm:text-sm mt-1 line-clamp-2">
+              {repo.description}
+            </p>
           )}
         </div>
         <motion.div
           className={`p-1.5 sm:p-2 rounded-lg transition-all duration-300 flex-shrink-0 ml-2 ${
-            isSelected ? 'bg-blue-500' : 'bg-white/10 group-hover:bg-white/20'
+            isSelected ? "bg-blue-500" : "bg-white/10 group-hover:bg-white/20"
           }`}
           whileHover={{ rotate: 5 }}
         >
-          <ChevronRight className={`w-3 h-3 sm:w-4 sm:h-4 ${isSelected ? 'text-white' : 'text-gray-300'}`} />
+          <ChevronRight
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${
+              isSelected ? "text-white" : "text-gray-300"
+            }`}
+          />
         </motion.div>
       </div>
-      
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-gray-400 space-y-2 sm:space-y-0">
         <div className="flex items-center space-x-3 sm:space-x-4">
           {repo.language && (
             <div className="flex items-center space-x-1">
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-blue-400 rounded-full"></div>
-              <span className="truncate max-w-16 sm:max-w-none">{repo.language}</span>
+              <span className="truncate max-w-16 sm:max-w-none">
+                {repo.language}
+              </span>
             </div>
           )}
           <div className="flex items-center space-x-1">
@@ -83,12 +105,15 @@ const RepoCard = ({ repo, onSelect, isSelected }: {
   );
 };
 
-export default function RepoSelector({ onSelectRepo, selectedRepo }: RepoSelectorProps) {
+export default function RepoSelector({
+  onSelectRepo,
+  selectedRepo,
+}: RepoSelectorProps) {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'updated' | 'stars' | 'name'>('updated');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"updated" | "stars" | "name">("updated");
   const { user } = useAuth();
 
   useEffect(() => {
@@ -98,37 +123,55 @@ export default function RepoSelector({ onSelectRepo, selectedRepo }: RepoSelecto
   const fetchRepositories = async () => {
     try {
       setLoading(true);
-      const accessToken = localStorage.getItem('accessToken');
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://reposcribe-lhhs.onrender.com';
-      const response = await axios.get(`${baseUrl}/api/repositories`, {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        setError("No GitHub access token found. Please log in again.");
+        setRepositories([]);
+        setLoading(false);
+        return;
+      }
+      // Debug: log token (remove in production)
+      console.debug("GitHub access token:", accessToken);
+      const response = await axios.get("https://api.github.com/user/repos", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          Accept: "application/vnd.github+json",
+        },
+        params: {
+          per_page: 100, // adjust as needed
+          sort: "updated",
         },
       });
-
-      const repos = response.data;
-      setRepositories(repos);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setRepositories(response.data);
+    } catch (err: any) {
+      if (err.response && err.response.status === 401) {
+        setError("GitHub token is invalid or expired. Please log in again.");
+      } else {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const filteredAndSortedRepos = repositories
-    .filter(repo => 
-      repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (repo.description && repo.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(
+      (repo) =>
+        repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (repo.description &&
+          repo.description.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     .sort((a, b) => {
       switch (sortBy) {
-        case 'stars':
+        case "stars":
           return b.stargazers_count - a.stargazers_count;
-        case 'name':
+        case "name":
           return a.name.localeCompare(b.name);
-        case 'updated':
+        case "updated":
         default:
-          return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+          return (
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          );
       }
     });
 
@@ -145,7 +188,9 @@ export default function RepoSelector({ onSelectRepo, selectedRepo }: RepoSelecto
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full mx-auto mb-4"
           />
-          <h2 className="text-2xl font-bold text-white mb-2">Loading your repositories</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Loading your repositories
+          </h2>
           <p className="text-gray-300">This might take a moment...</p>
         </motion.div>
       </div>
@@ -215,7 +260,8 @@ export default function RepoSelector({ onSelectRepo, selectedRepo }: RepoSelecto
             Select a Repository
           </h1>
           <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-4">
-            Choose a repository from your GitHub account to generate documentation for
+            Choose a repository from your GitHub account to generate
+            documentation for
           </p>
         </motion.div>
 
@@ -240,7 +286,9 @@ export default function RepoSelector({ onSelectRepo, selectedRepo }: RepoSelecto
             <select
               className="bg-white/10 border border-white/20 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm sm:text-base"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'updated' | 'stars' | 'name')}
+              onChange={(e) =>
+                setSortBy(e.target.value as "updated" | "stars" | "name")
+              }
             >
               <option value="updated">Recently Updated</option>
               <option value="stars">Most Stars</option>
@@ -275,9 +323,13 @@ export default function RepoSelector({ onSelectRepo, selectedRepo }: RepoSelecto
             className="text-center py-12"
           >
             <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-white mb-2">No repositories found</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">
+              No repositories found
+            </h3>
             <p className="text-gray-300">
-              {searchTerm ? 'Try adjusting your search terms' : 'You don\'t have any repositories yet'}
+              {searchTerm
+                ? "Try adjusting your search terms"
+                : "You don't have any repositories yet"}
             </p>
           </motion.div>
         )}

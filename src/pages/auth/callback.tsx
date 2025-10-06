@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
@@ -10,28 +10,33 @@ const AuthCallback = () => {
   const { code, error } = router.query;
   const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const processedRef = useRef(false);
 
   useEffect(() => {
-    const processCallback = async () => {
-      if (error) {
-        setAuthError("OAuth error: " + error);
-        setLoading(false);
-        return;
-      }
-      if (code && typeof code === "string" && router.isReady) {
-        try {
-          await handleCallback(code);
-          setLoading(false);
-          router.push("/");
-        } catch (err) {
-          setAuthError("Authentication failed. Please try again.");
-          setLoading(false);
-        }
-      }
-    };
-    if (router.isReady) {
-      processCallback();
+    if (!router.isReady || processedRef.current) return;
+    processedRef.current = true;
+
+    if (error) {
+      setAuthError("OAuth error: " + error);
+      setLoading(false);
+      return;
     }
+    if (!code || typeof code !== "string") {
+      setAuthError("No code provided in callback URL.");
+      setLoading(false);
+      return;
+    }
+    // Only process once
+    (async () => {
+      try {
+  await handleCallback(code);
+  setLoading(false);
+  router.replace("/dashboard");
+      } catch (err) {
+        setAuthError("Authentication failed. Please try again.");
+        setLoading(false);
+      }
+    })();
   }, [router.isReady, code, error, handleCallback, router]);
 
   return (
@@ -57,7 +62,7 @@ const AuthCallback = () => {
             </h2>
             <p className="text-white mb-4">{authError}</p>
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.replace("/")}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold"
             >
               Back to Home

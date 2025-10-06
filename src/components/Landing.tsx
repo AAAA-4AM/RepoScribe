@@ -17,8 +17,9 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import { features } from "@/contexts/LandingConstants";
 import { FloatingIcon } from "@/contexts/LandingConstants";
 
+
 export default function Landing() {
-  const { login } = useAuth();
+  const { login, user, logout } = useAuth();
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   return (
@@ -30,11 +31,7 @@ export default function Landing() {
       <div className="block">
         <FloatingIcon icon={Github} delay={1} className="top-20 left-10" />
         <FloatingIcon icon={FileText} delay={1.2} className="top-32 right-20" />
-        <FloatingIcon
-          icon={Sparkles}
-          delay={1.4}
-          className="bottom-32 left-20"
-        />
+        <FloatingIcon icon={Sparkles} delay={1.4} className="bottom-32 left-20" />
         <FloatingIcon icon={Zap} delay={1.6} className="bottom-20 right-10" />
         <FloatingIcon icon={Shield} delay={1.8} className="top-1/2 left-5" />
         <FloatingIcon icon={Download} delay={2} className="top-1/3 right-5" />
@@ -59,16 +56,37 @@ export default function Landing() {
             </span>
           </motion.div>
 
-          <motion.button
-            onClick={login}
-            className="flex items-center space-x-1 sm:space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-2 sm:px-6 sm:py-3 rounded-full text-white hover:bg-white/20 transition-all duration-300 text-sm sm:text-base"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Github className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="hidden xs:inline">Sign in with GitHub</span>
-            <span className="xs:hidden">Sign in</span>
-          </motion.button>
+          {user ? (
+            <div className="flex items-center space-x-3">
+              {user.avatar_url && (
+                <img
+                  src={user.avatar_url}
+                  alt={user.name || user.login}
+                  className="w-8 h-8 rounded-full border-2 border-white/20"
+                />
+              )}
+              <span className="text-white font-medium">{user.name || user.login}</span>
+              <motion.button
+                onClick={logout}
+                className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg border border-white/20 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Sign Out
+              </motion.button>
+            </div>
+          ) : (
+            <motion.button
+              onClick={login}
+              className="flex items-center space-x-1 sm:space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-2 sm:px-6 sm:py-3 rounded-full text-white hover:bg-white/20 transition-all duration-300 text-sm sm:text-base"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Github className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden xs:inline">Sign in with GitHub</span>
+              <span className="xs:hidden">Sign in</span>
+            </motion.button>
+          )}
         </div>
       </motion.nav>
 

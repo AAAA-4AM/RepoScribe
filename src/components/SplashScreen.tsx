@@ -7,6 +7,19 @@ interface SplashScreenProps {
 }
 
 const AnimatedLogo = () => {
+  const [particles, setParticles] = useState<Array<{ top: number; left: number; duration: number; delay: number }>>([]);
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+    setParticles(
+      Array.from({ length: 6 }).map(() => ({
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        duration: 2 + Math.random() * 2,
+        delay: Math.random() * 2,
+      }))
+    );
+  }, []);
   return (
     <motion.div
       className="relative"
@@ -48,14 +61,14 @@ const AnimatedLogo = () => {
         <FileText className="w-12 h-12 text-white z-10" />
       </motion.div>
 
-      {/* Floating particles */}
-      {[...Array(6)].map((_, i) => (
+      {/* Floating particles (client only, after mount) */}
+      {hasMounted && particles.map((p, i) => (
         <motion.div
           key={i}
           className="absolute w-2 h-2 bg-blue-400 rounded-full"
           style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
+            top: `${p.top}%`,
+            left: `${p.left}%`,
           }}
           animate={{
             y: [-20, 20, -20],
@@ -63,9 +76,9 @@ const AnimatedLogo = () => {
             scale: [0.5, 1, 0.5],
           }}
           transition={{
-            duration: 2 + Math.random() * 2,
+            duration: p.duration,
             repeat: Infinity,
-            delay: Math.random() * 2,
+            delay: p.delay,
             ease: "easeInOut",
           }}
         />
@@ -105,7 +118,11 @@ const FloatingIcons = () => {
     { Icon: Sparkles, delay: 1.1, position: "bottom-24 right-20" },
     { Icon: Zap, delay: 1.3, position: "top-1/2 left-8" },
   ];
-
+  const [durations, setDurations] = useState<number[]>([]);
+  useEffect(() => {
+    setDurations(icons.map(() => 4 + Math.random() * 2));
+    // eslint-disable-next-line
+  }, []);
   return (
     <>
       {icons.map(({ Icon, delay, position }, index) => (
@@ -123,7 +140,7 @@ const FloatingIcons = () => {
               rotate: [-5, 5, -5],
             }}
             transition={{
-              duration: 4 + Math.random() * 2,
+              duration: durations[index] || 5,
               repeat: Infinity,
               ease: "easeInOut",
             }}

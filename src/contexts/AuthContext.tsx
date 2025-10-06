@@ -44,7 +44,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       if (accessToken) {
-        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+        const baseUrl =
+          process.env.NEXT_PUBLIC_API_BASE_URL ||
+          "https://reposcribe-1.onrender.com";
+        // call backend to validate token and return user
         const response = await axios.get(`${baseUrl}/auth/user`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -78,22 +81,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const login = () => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "https://reposcribe-1.onrender.com";
     const redirectUri = `${window.location.origin}/auth/callback`;
-    // window.location.href = `${baseUrl}/auth/github/login?redirect_uri=${encodeURIComponent(
-    //   redirectUri
-    // )}`;
-    window.location.href = `${baseUrl}/auth/github/login`;
+    // redirect to backend-managed oauth entrypoint
+    const loginUrl = `${baseUrl}/auth/github/login?redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}`;
+    window.location.href = loginUrl;
   };
 
   const handleCallback = async (code: string) => {
     try {
       setAuthState((prev) => ({ ...prev, loading: true, error: null }));
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-      const response = await axios.post(`${baseUrl}/auth/github/callback`, {
-        code,
-        redirect_uri: `${window.location.origin}/auth/callback`,
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL ||
+        "https://reposcribe-1.onrender.comm";
+      // backend will exchange the code for the GitHub token and return app access token + user
+      const response = await axios.get(`${baseUrl}/auth/github/callback`, {
+        params: {
+          code,
+          redirect_uri: `${window.location.origin}/auth/callback`,
+        },
       });
 
       const { accessToken, user } = response.data;
